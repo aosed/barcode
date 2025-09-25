@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة رموز QR</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#6366f1">
+    <meta name="description" content="تطبيق ويب تقدمي لإدارة رموز QR">
+    <link rel="manifest" href="/static/manifest.json">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/static/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192x192.png">
+    
+    <!-- External CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="app-title">
+                    <i class="fas fa-qrcode"></i>
+                    نظام إدارة رموز QR
+                </h1>
+                <div class="header-actions">
+                    <button id="installBtn" class="btn btn-outline">
+                        <i class="fas fa-download"></i>
+                        تثبيت التطبيق
+                    </button>
+                    <button id="statsBtn" class="btn btn-primary">
+                        <i class="fas fa-chart-bar"></i>
+                        الإحصائيات
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Navigation Tabs -->
+            <nav class="tabs">
+                <button class="tab-btn active" data-tab="add">
+                    <i class="fas fa-plus"></i>
+                    إضافة رمز QR
+                </button>
+                <button class="tab-btn" data-tab="scan">
+                    <i class="fas fa-camera"></i>
+                    مسح رمز QR
+                </button>
+                <button class="tab-btn" data-tab="list">
+                    <i class="fas fa-list"></i>
+                    قائمة رموز QR
+                </button>
+            </nav>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- Add QR Tab -->
+                <div id="addTab" class="tab-panel active">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>
+                                <i class="fas fa-plus-circle"></i>
+                                إضافة رمز QR جديد
+                            </h2>
+                        </div>
+                        <div class="card-body">
+                            <form id="addQRForm" class="form">
+                                <div class="form-group">
+                                    <label for="qrNumber" class="form-label required">الرقم</label>
+                                    <input type="text" id="qrNumber" name="number" class="form-input" 
+                                           placeholder="أدخل الرقم الأساسي لرمز QR" required>
+                                    <small class="form-help">الرقم الأساسي الذي سيتم تخزينه في رمز QR</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="qrName" class="form-label">الاسم</label>
+                                    <input type="text" id="qrName" name="name" class="form-input" 
+                                           placeholder="أدخل اسماً أو وصفاً مختصراً (اختياري)">
+                                    <small class="form-help">اسم أو وصف مختصر مرتبط بالرقم</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="qrDescription" class="form-label">الوصف</label>
+                                    <textarea id="qrDescription" name="description" class="form-textarea" 
+                                              placeholder="أدخل وصفاً تفصيلياً (اختياري)" rows="3"></textarea>
+                                    <small class="form-help">وصف تفصيلي إضافي لرمز QR</small>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary btn-large">
+                                    <i class="fas fa-save"></i>
+                                    حفظ رمز QR
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scan QR Tab -->
+                <div id="scanTab" class="tab-panel">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>
+                                <i class="fas fa-camera"></i>
+                                مسح رمز QR
+                            </h2>
+                        </div>
+                        <div class="card-body">
+                            <!-- Scanner Area -->
+                            <div class="scanner-container">
+                                <div id="scannerArea" class="scanner-area">
+                                    <div class="scanner-placeholder">
+                                        <i class="fas fa-qrcode scanner-icon"></i>
+                                        <p>اضغط "بدء المسح" لتشغيل الكاميرا</p>
+                                    </div>
+                                </div>
+                                <div class="scanner-controls">
+                                    <button id="startScanBtn" class="btn btn-primary">
+                                        <i class="fas fa-camera"></i>
+                                        بدء المسح
+                                    </button>
+                                    <button id="stopScanBtn" class="btn btn-secondary" style="display: none;">
+                                        <i class="fas fa-stop"></i>
+                                        إيقاف المسح
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Manual Input -->
+                            <div class="manual-input">
+                                <h3>أو أدخل محتوى رمز QR يدوياً:</h3>
+                                <form id="manualVerifyForm" class="form">
+                                    <div class="form-group">
+                                        <input type="text" id="manualQRInput" name="content" class="form-input" 
+                                               placeholder="أدخل محتوى رمز QR">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i>
+                                        تحقق
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- Scan Result -->
+                            <div id="scanResult" class="scan-result" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- List QR Tab -->
+                <div id="listTab" class="tab-panel">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>
+                                <i class="fas fa-list"></i>
+                                قائمة رموز QR
+                            </h2>
+                            <button id="refreshListBtn" class="btn btn-outline">
+                                <i class="fas fa-refresh"></i>
+                                تحديث
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="qrList" class="qr-list">
+                                <div class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    جاري التحميل...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Stats Modal -->
+    <div id="statsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>إحصائيات رموز QR</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="statsContent" class="stats-grid">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        جاري التحميل...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>جاري المعالجة...</p>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- External JavaScript -->
+    <script src="https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js"></script>
+    
+    <!-- Local JavaScript -->
+    <script src="/static/js/app.js"></script>
+    <script src="/static/js/scanner.js"></script>
+    <script src="/static/js/pwa.js"></script>
+</body>
+</html>
+
